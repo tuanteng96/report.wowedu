@@ -186,7 +186,8 @@ function TeacherBusiness(props) {
             dataKey: value.From + '-' + value.To + index,
             cellRenderer: ({ rowData }) => rowData.COT[index].Total,
             width: 180,
-            sortable: false
+            sortable: false,
+            align: 'center'
           }
           newList.push(newObj)
         }

@@ -8,6 +8,7 @@ import { BrowserHelpers } from 'src/helpers/BrowserHelpers'
 import reportsApi from 'src/api/reports.api'
 import { uuidv4 } from '@nikitababko/id-generator'
 import _ from 'lodash'
+import clsx from 'clsx'
 
 import moment from 'moment'
 import 'moment/locale/vi'
@@ -50,7 +51,36 @@ function TeacherThematic(props) {
             Total: data.result?.Total || 0,
             PCount: data?.result?.PCount || 0
           }
-          setListData(Items.map(o => ({ ...o, IDs: uuidv4() })))
+          let crListData = Items.map(o => ({ ...o, IDs: uuidv4() }))
+          let newListData = [
+            ...Items.map((o, idx) => ({
+              ...o,
+              IDs: uuidv4(),
+              rowIndex: idx,
+              isRowIndex: true
+            }))
+          ]
+          var i = -1
+          for (let x of crListData) {
+            const index = crListData.findIndex(o => o.MA_SO === x.MA_SO)
+            if (x.MA_SO && x.ColSpan && x.ColSpan.length > 0 && index) {
+              const newObj = {
+                ...x,
+                HO_TEN: '',
+                MA_SO: '',
+                IDs: uuidv4(),
+                rowIndex: '',
+                isRowIndex: false
+              }
+              if (i >= 0) {
+                newListData.splice(index + i, 0, newObj)
+              } else {
+                newListData.unshift(newObj)
+              }
+              i++
+            }
+          }
+          setListData(newListData)
           setColumnsAdd(Columns)
           setPageCount(PCount)
           setLoading(false)
@@ -90,14 +120,16 @@ function TeacherThematic(props) {
   }
 
   const columns = useMemo(() => {
-    console.log(ListData)
     let objColumns = [
       {
         key: 'index',
+        keyIndex: 0,
         title: 'STT',
         dataKey: 'index',
-        cellRenderer: ({ rowIndex }) =>
-          filters.Ps * (filters.Pi - 1) + (rowIndex + 1),
+        cellRenderer: ({ rowData }) =>
+          rowData.isRowIndex
+            ? filters.Ps * (filters.Pi - 1) + (rowData.rowIndex + 1)
+            : colSpanRender(rowData, 0),
         width: 60,
         sortable: false,
         align: 'center',
@@ -106,9 +138,12 @@ function TeacherThematic(props) {
         }
       },
       {
-        key: 'MA_GIAO_VIEN',
+        key: 'MA_SO',
+        keyIndex: 1,
         title: 'Mã GV',
-        dataKey: 'MA_GIAO_VIEN',
+        dataKey: 'MA_SO',
+        cellRenderer: ({ rowData }) =>
+          rowData.MA_SO ? rowData.MA_SO : colSpanRender(rowData, 1),
         width: 120,
         sortable: false,
         mobileOptions: {
@@ -117,8 +152,11 @@ function TeacherThematic(props) {
       },
       {
         key: 'HO_TEN',
+        keyIndex: 2,
         title: 'Họ và tên',
         dataKey: 'HO_TEN',
+        cellRenderer: ({ rowData }) =>
+          rowData.MA_SO ? rowData.HO_TEN : colSpanRender(rowData, 2),
         width: 250,
         sortable: false,
         mobileOptions: {
@@ -131,22 +169,91 @@ function TeacherThematic(props) {
         const newList = []
         for (let [index, value] of ColumnsAdd.entries()) {
           const newObj = {
-            key: value.From + '-' + value.To + index,
-            title: `${value.Text} (${moment(value.From).format(
-              'DD/MM'
-            )} - ${moment(value.To).format('DD/MM')})`,
-            dataKey: value.From + '-' + value.To + index,
-            cellRenderer: ({ rowData }) => rowData.COT[index].Total,
-            width: 180,
-            sortable: false
+            key: uuidv4(),
+            keyIndex: 2 + index,
+            title: moment(value.Date).format('D'),
+            dataKey: uuidv4(),
+            cellRenderer: ({ rowData }) =>
+              rowData.MA_SO
+                ? rowData.COT[index].Total
+                : colSpanRender(rowData, 2 + index),
+            width: 100,
+            align: 'center',
+            sortable: false,
+            KeyTitle: value.Text
           }
           newList.push(newObj)
         }
+        objColumns = ArrayHeplers.insertArrayAt(objColumns, 3, newList)
       }
     }
 
     return objColumns
   }, [filters, ListData, ColumnsAdd])
+
+  const colSpanRender = (rowData, index) => {
+    const idx = rowData.ColSpan
+      ? rowData.ColSpan.findIndex(o => Number(o.ColBegin) === Number(index))
+      : -1
+    if (idx > -1) {
+      return rowData.ColSpan[idx].Text
+    }
+    return ''
+  }
+
+  const headerRenderer = ({ cells, columns, headerIndex }) => {
+    if (headerIndex === 0) {
+      const GroupCell = []
+      let WidthOffset = 0
+      //WidthOffset
+      columns.forEach((column, columnIndex) => {
+        if (columnIndex <= 2) {
+          WidthOffset += cells[columnIndex].props.style.width
+        }
+      })
+      GroupCell.push(
+        <div
+          className="h-100 border-right"
+          style={{ width: WidthOffset + 'px' }}
+          key={uuidv4()}
+        ></div>
+      )
+
+      columns.forEach((column, columnIndex) => {
+        if (columnIndex > 2) {
+          const width = cells[columnIndex].props.style.width
+          GroupCell.push(
+            <div
+              className="h-100 border-right d-flex align-items-center justify-content-center"
+              style={{ width: width + 'px' }}
+              key={uuidv4()}
+            >
+              {column.KeyTitle}
+            </div>
+          )
+        }
+      })
+
+      return GroupCell
+    }
+    return cells
+  }
+
+  const rowRenderer = ({ rowData, rowIndex, cells, columns }) => {
+    const colSpanIndex = 3
+    let width = 200
+    // for (let i = 1; i < colSpan; i++) {
+    //   width += cells[colSpanIndex + i].props.style.width
+    //   cells[colSpanIndex + i] = null
+    // }
+    const style = {
+      ...cells[colSpanIndex].props.style,
+      width,
+      backgroundColor: 'lightgray'
+    }
+    cells[colSpanIndex] = React.cloneElement(cells[colSpanIndex], { style })
+    return cells
+  }
 
   return (
     <div className="py-main">
@@ -192,6 +299,9 @@ function TeacherThematic(props) {
             loading={loading}
             pageCount={PageCount}
             onPagesChange={onPagesChange}
+            headerHeight={[50, 50]}
+            headerRenderer={headerRenderer}
+            rowRenderer={rowRenderer}
             // optionMobile={{
             //   CellModal: cell => OpenModalMobile(cell)
             // }}
