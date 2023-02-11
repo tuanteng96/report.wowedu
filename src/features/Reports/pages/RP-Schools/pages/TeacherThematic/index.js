@@ -8,7 +8,7 @@ import { BrowserHelpers } from 'src/helpers/BrowserHelpers'
 import reportsApi from 'src/api/reports.api'
 import { uuidv4 } from '@nikitababko/id-generator'
 import _ from 'lodash'
-import clsx from 'clsx'
+import Text from 'react-texty'
 
 import moment from 'moment'
 import 'moment/locale/vi'
@@ -63,19 +63,20 @@ function TeacherThematic(props) {
           var i = -1
           for (let x of crListData) {
             const index = crListData.findIndex(o => o.MA_SO === x.MA_SO)
-            if (x.MA_SO && x.ColSpan && x.ColSpan.length > 0 && index) {
+            if (x.MA_SO && index > -1) {
               const newObj = {
                 ...x,
                 HO_TEN: '',
                 MA_SO: '',
                 IDs: uuidv4(),
                 rowIndex: '',
-                isRowIndex: false
+                isRowIndex: false,
+                isText: true
               }
               if (i >= 0) {
                 newListData.splice(index + i, 0, newObj)
               } else {
-                newListData.unshift(newObj)
+                newListData.push(newObj)
               }
               i++
             }
@@ -171,16 +172,21 @@ function TeacherThematic(props) {
           const newObj = {
             key: uuidv4(),
             keyIndex: 2 + index,
-            title: moment(value.Date).format('D'),
+            title: value.Date ? moment(value.Date).format('D') : value.Text,
             dataKey: uuidv4(),
-            cellRenderer: ({ rowData }) =>
-              rowData.MA_SO
-                ? rowData.COT[index].Total
-                : colSpanRender(rowData, 2 + index),
-            width: 100,
+            cellRenderer: ({ rowData }) => (
+              <Text tooltipMaxWidth={300}>
+                {!rowData.isText
+                  ? rowData.COT[index].Total
+                    ? rowData.COT[index].Total
+                    : ''
+                  : rowData.COT[index].Text}
+              </Text>
+            ),
+            width: value.Date ? 100 : 150,
             align: 'center',
             sortable: false,
-            KeyTitle: value.Text
+            KeyTitle: value.Date ? value.Text : ''
           }
           newList.push(newObj)
         }
@@ -239,21 +245,21 @@ function TeacherThematic(props) {
     return cells
   }
 
-  const rowRenderer = ({ rowData, rowIndex, cells, columns }) => {
-    const colSpanIndex = 3
-    let width = 200
-    // for (let i = 1; i < colSpan; i++) {
-    //   width += cells[colSpanIndex + i].props.style.width
-    //   cells[colSpanIndex + i] = null
-    // }
-    const style = {
-      ...cells[colSpanIndex].props.style,
-      width,
-      backgroundColor: 'lightgray'
-    }
-    cells[colSpanIndex] = React.cloneElement(cells[colSpanIndex], { style })
-    return cells
-  }
+  // const rowRenderer = ({ rowData, rowIndex, cells, columns }) => {
+  //   const colSpanIndex = 3
+  //   let width = 200
+  //   // for (let i = 1; i < colSpan; i++) {
+  //   //   width += cells[colSpanIndex + i].props.style.width
+  //   //   cells[colSpanIndex + i] = null
+  //   // }
+  //   const style = {
+  //     ...cells[colSpanIndex].props.style,
+  //     width,
+  //     backgroundColor: 'lightgray'
+  //   }
+  //   cells[colSpanIndex] = React.cloneElement(cells[colSpanIndex], { style })
+  //   return cells
+  // }
 
   return (
     <div className="py-main">
@@ -301,7 +307,7 @@ function TeacherThematic(props) {
             onPagesChange={onPagesChange}
             headerHeight={[50, 50]}
             headerRenderer={headerRenderer}
-            rowRenderer={rowRenderer}
+            //rowRenderer={rowRenderer}
             // optionMobile={{
             //   CellModal: cell => OpenModalMobile(cell)
             // }}

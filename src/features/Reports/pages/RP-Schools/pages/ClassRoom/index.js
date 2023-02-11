@@ -154,7 +154,7 @@ function ClassRoom(props) {
                 dataKey: value.From + '-' + value.To + idx + index,
                 cellRenderer: ({ rowData }) =>
                   rowData.COT[index].CHI_TIET[idx].Total,
-                width: 180,
+                width: 130,
                 sortable: false,
                 KeyTitle: 'Tháng ' + month.THANG
               }

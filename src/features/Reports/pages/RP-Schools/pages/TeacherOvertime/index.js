@@ -8,16 +8,16 @@ import { BrowserHelpers } from 'src/helpers/BrowserHelpers'
 import reportsApi from 'src/api/reports.api'
 import { uuidv4 } from '@nikitababko/id-generator'
 import _ from 'lodash'
+import Text from 'react-texty'
 
 import moment from 'moment'
 import 'moment/locale/vi'
 
 moment.locale('vi')
 
-function TeacherBusiness(props) {
+function TeacherOvertime(props) {
   const [ListData, setListData] = useState([])
   const [ColumnsAdd, setColumnsAdd] = useState([])
-  const [ColumnsAdditional, setColumnsAdditional] = useState([])
   const [loading, setLoading] = useState(false)
   const [PageCount, setPageCount] = useState(0)
   const [PageTotal, setPageTotal] = useState(0)
@@ -28,33 +28,62 @@ function TeacherBusiness(props) {
     Pi: 1, // Trang hiện tại
     Ps: 15, // Số lượng item
     From: moment().startOf('month').toDate(),
-    To: moment().endOf('month').toDate()
+    To: moment().endOf('month').toDate(),
+    match: true
   })
 
   useEffect(() => {
-    getListTeacherBusiness()
+    getListTeacherOvertime()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters])
 
-  const getListTeacherBusiness = (isLoading = true, callback) => {
+  const getListTeacherOvertime = (isLoading = true, callback) => {
     isLoading && setLoading(true)
     reportsApi
-      .getListTeacherBusiness(BrowserHelpers.getRequestParamsSchools(filters))
+      .getListTeacherOvertime(BrowserHelpers.getRequestParamsSchools(filters))
       .then(({ data }) => {
         if (data.isRight) {
           PermissionHelpers.ErrorAccess(data.error)
           setLoading(false)
         } else {
-          const { Items, Total, PCount, Columns, ColumnsAdditi } = {
+          const { Items, Total, PCount, Columns } = {
             Items: data.result?.Items || [],
             Columns: data.result?.COT || [],
-            ColumnsAdditi: data.result?.COT_BO_SUNG || [],
             Total: data.result?.Total || 0,
             PCount: data?.result?.PCount || 0
           }
-          setListData(Items.map(o => ({ ...o, IDs: uuidv4() })))
+          let crListData = Items.map(o => ({ ...o, IDs: uuidv4() }))
+          let newListData = [
+            ...Items.map((o, idx) => ({
+              ...o,
+              IDs: uuidv4(),
+              rowIndex: idx,
+              isRowIndex: true
+            }))
+          ]
+          var i = -1
+          for (let x of crListData) {
+            const index = crListData.findIndex(o => o.MA_SO === x.MA_SO)
+            if (x.MA_SO && index > -1) {
+              const newObj = {
+                ...x,
+                HO_TEN: '',
+                MA_SO: '',
+                IDs: uuidv4(),
+                rowIndex: '',
+                isRowIndex: false,
+                isText: true
+              }
+              if (i >= 0) {
+                newListData.splice(index + i, 0, newObj)
+              } else {
+                newListData.push(newObj)
+              }
+              i++
+            }
+          }
+          setListData(newListData)
           setColumnsAdd(Columns)
-          setColumnsAdditional(ColumnsAdditi)
           setPageCount(PCount)
           setLoading(false)
           setPageTotal(Total)
@@ -83,7 +112,7 @@ function TeacherBusiness(props) {
   }
 
   const onRefresh = () => {
-    getListTeacherBusiness()
+    getListTeacherOvertime()
   }
 
   const onExport = () => {}
@@ -96,10 +125,13 @@ function TeacherBusiness(props) {
     let objColumns = [
       {
         key: 'index',
+        keyIndex: 0,
         title: 'STT',
         dataKey: 'index',
-        cellRenderer: ({ rowIndex }) =>
-          filters.Ps * (filters.Pi - 1) + (rowIndex + 1),
+        cellRenderer: ({ rowData }) =>
+          rowData.isRowIndex
+            ? filters.Ps * (filters.Pi - 1) + (rowData.rowIndex + 1)
+            : colSpanRender(rowData, 0),
         width: 60,
         sortable: false,
         align: 'center',
@@ -108,9 +140,12 @@ function TeacherBusiness(props) {
         }
       },
       {
-        key: 'MA_GV',
+        key: 'MA_SO',
+        keyIndex: 1,
         title: 'Mã GV',
-        dataKey: 'MA_GV',
+        dataKey: 'MA_SO',
+        cellRenderer: ({ rowData }) =>
+          rowData.MA_SO ? rowData.MA_SO : colSpanRender(rowData, 1),
         width: 120,
         sortable: false,
         mobileOptions: {
@@ -118,40 +153,13 @@ function TeacherBusiness(props) {
         }
       },
       {
-        key: 'MA_TONG_CTP',
-        title: 'Mã Tổng CTP',
-        dataKey: 'MA_TONG_CTP',
-        width: 180,
-        sortable: false,
-        mobileOptions: {
-          visible: true
-        }
-      },
-      {
         key: 'HO_TEN',
+        keyIndex: 2,
         title: 'Họ và tên',
         dataKey: 'HO_TEN',
+        cellRenderer: ({ rowData }) =>
+          rowData.MA_SO ? rowData.HO_TEN : colSpanRender(rowData, 2),
         width: 250,
-        sortable: false,
-        mobileOptions: {
-          visible: true
-        }
-      },
-      {
-        key: 'DINH_MUC',
-        title: 'Định mức 85',
-        dataKey: 'DINH_MUC',
-        width: 150,
-        sortable: false,
-        mobileOptions: {
-          visible: true
-        }
-      },
-      {
-        key: 'TONG_CTP',
-        title: 'Tổng CTP',
-        dataKey: 'TONG_CTP',
-        width: 180,
         sortable: false,
         mobileOptions: {
           visible: true
@@ -159,55 +167,103 @@ function TeacherBusiness(props) {
       }
     ]
     if (ListData && ListData.length > 0) {
-      const newListAdditional = []
-      if (ColumnsAdditional && ColumnsAdditional.length > 0) {
-        for (let [index, value] of ColumnsAdditional.entries()) {
-          const UUid = uuidv4()
-          const newObj = {
-            key: value.From + '-' + value.To + UUid,
-            title: `Bổ xung ${value.Text}`,
-            dataKey: value.From + '-' + value.To + UUid,
-            cellRenderer: ({ rowData }) => rowData.BO_SUNG[index].Total,
-            width: 180,
-            sortable: false
-          }
-          newListAdditional.push(newObj)
-        }
-      }
-      objColumns = ArrayHeplers.insertArrayAt(objColumns, 5, newListAdditional)
       if (ColumnsAdd && ColumnsAdd.length > 0) {
         const newList = []
         for (let [index, value] of ColumnsAdd.entries()) {
           const newObj = {
-            key: value.From + '-' + value.To + index,
-            title: `${value.Text} (${moment(value.From).format(
-              'DD/MM'
-            )} - ${moment(value.To).format('DD/MM')})`,
-            dataKey: value.From + '-' + value.To + index,
-            cellRenderer: ({ rowData }) => rowData.COT[index].Total,
-            width: 130,
+            key: uuidv4(),
+            keyIndex: 2 + index,
+            title: value.Date ? moment(value.Date).format('D') : value.Text,
+            dataKey: uuidv4(),
+            cellRenderer: ({ rowData }) => (
+              <Text tooltipMaxWidth={300}>
+                {!rowData.isText
+                  ? rowData.COT[index].Total
+                    ? rowData.COT[index].Total
+                    : ''
+                  : rowData.COT[index].Text}
+              </Text>
+            ),
+            width: value.Date ? 100 : 150,
+            align: 'center',
             sortable: false,
-            align: 'center'
+            KeyTitle: value.Date ? value.Text : ''
           }
           newList.push(newObj)
         }
-        objColumns = ArrayHeplers.insertArrayAt(
-          objColumns,
-          5 + newListAdditional.length,
-          newList
-        )
+        objColumns = ArrayHeplers.insertArrayAt(objColumns, 3, newList)
       }
     }
 
     return objColumns
-  }, [filters, ListData, ColumnsAdd, ColumnsAdditional])
+  }, [filters, ListData, ColumnsAdd])
+
+  const colSpanRender = (rowData, index) => {
+    const idx = rowData.ColSpan
+      ? rowData.ColSpan.findIndex(o => Number(o.ColBegin) === Number(index))
+      : -1
+    if (idx > -1) {
+      return rowData.ColSpan[idx].Text
+    }
+    return ''
+  }
+
+  const headerRenderer = ({ cells, columns, headerIndex }) => {
+    if (headerIndex === 0) {
+      const GroupCell = []
+      let WidthOffset = 0
+      //WidthOffset
+      columns.forEach((column, columnIndex) => {
+        if (columnIndex <= 2) {
+          WidthOffset += cells[columnIndex].props.style.width
+        }
+      })
+      GroupCell.push(
+        <div
+          className="h-100 border-right"
+          style={{ width: WidthOffset + 'px' }}
+          key={uuidv4()}
+        ></div>
+      )
+
+      columns.forEach((column, columnIndex) => {
+        if (columnIndex > 2) {
+          const width = cells[columnIndex].props.style.width
+          GroupCell.push(
+            <div
+              className="h-100 border-right d-flex align-items-center justify-content-center"
+              style={{ width: width + 'px' }}
+              key={uuidv4()}
+            >
+              {column.KeyTitle}
+            </div>
+          )
+        }
+      })
+
+      return GroupCell
+    }
+    return cells
+  }
+
+  // const rowRenderer = ({ rowData, rowIndex, cells, columns }) => {
+  //   const colSpanIndex = 3
+  //   let width = 200
+  //   const style = {
+  //     ...cells[colSpanIndex].props.style,
+  //     width,
+  //     backgroundColor: 'lightgray'
+  //   }
+  //   cells[colSpanIndex] = React.cloneElement(cells[colSpanIndex], { style })
+  //   return cells
+  // }
 
   return (
     <div className="py-main">
       <div className="subheader d-flex justify-content-between align-items-center">
         <div className="flex-1">
           <span className="text-uppercase text-uppercase font-size-xl fw-600">
-            Giáo viên - Công tác phí
+            Giáo viên - Tăng ca
           </span>
         </div>
         <div className="w-85px d-flex justify-content-end">
@@ -234,7 +290,7 @@ function TeacherBusiness(props) {
       <div className="bg-white rounded">
         <div className="px-20px py-15px border-bottom border-gray-200 d-flex align-items-center justify-content-between">
           <div className="fw-500 font-size-lg">
-            Danh sách Giáo viên - Công tác phí
+            Danh sách Giáo viên - Tăng ca
           </div>
         </div>
         <div className="p-20px">
@@ -246,6 +302,9 @@ function TeacherBusiness(props) {
             loading={loading}
             pageCount={PageCount}
             onPagesChange={onPagesChange}
+            headerHeight={[50, 50]}
+            headerRenderer={headerRenderer}
+            //rowRenderer={rowRenderer}
             // optionMobile={{
             //   CellModal: cell => OpenModalMobile(cell)
             // }}
@@ -256,4 +315,4 @@ function TeacherBusiness(props) {
   )
 }
 
-export default TeacherBusiness
+export default TeacherOvertime

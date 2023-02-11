@@ -142,7 +142,8 @@ function TeacherClass(props) {
         sortable: false,
         mobileOptions: {
           visible: true
-        }
+        },
+        className: 'justify-content-center'
       },
       {
         key: 'SO_TUAN',
@@ -152,7 +153,8 @@ function TeacherClass(props) {
         sortable: false,
         mobileOptions: {
           visible: true
-        }
+        },
+        className: 'justify-content-center'
       },
       {
         key: 'TRUNG_BINH_TIET',
@@ -162,7 +164,8 @@ function TeacherClass(props) {
         sortable: false,
         mobileOptions: {
           visible: true
-        }
+        },
+        className: 'justify-content-center'
       },
       {
         key: 'PHU_CAP_KPI',
@@ -172,7 +175,8 @@ function TeacherClass(props) {
         sortable: false,
         mobileOptions: {
           visible: true
-        }
+        },
+        className: 'justify-content-center'
       },
       {
         key: 'HE_SO_VUOT_TIET',
@@ -182,7 +186,8 @@ function TeacherClass(props) {
         sortable: false,
         mobileOptions: {
           visible: true
-        }
+        },
+        className: 'justify-content-center'
       },
       {
         key: 'PHU_CAP_VUOT_TIET',
@@ -192,7 +197,8 @@ function TeacherClass(props) {
         sortable: false,
         mobileOptions: {
           visible: true
-        }
+        },
+        className: 'justify-content-center'
       }
     ]
     if (ListData && ListData.length > 0) {
@@ -206,8 +212,10 @@ function TeacherClass(props) {
             )} - ${moment(value.To).format('DD/MM')})`,
             dataKey: value.From + '-' + value.To + index,
             cellRenderer: ({ rowData }) => rowData.COT[index].Total,
-            width: 180,
-            sortable: false
+            width: 125,
+            sortable: false,
+            headerClassName: 'text-center',
+            className: 'justify-content-center'
           }
           newList.push(newObj)
         }
