@@ -24,6 +24,12 @@ const moreApi = {
   getAllMember: key => {
     return http.get(`/api/gl/select2?cmd=member&q=${key}`)
   },
+  getAllTeacher: data => {
+    return http.post(
+      '/api/v3/content?cmd=pgs&type=UserEnt',
+      JSON.stringify(data)
+    )
+  },
   getAllCategories: key => {
     return http.get(
       `/api/gl/select2?cmd=cate&app=type&ignore_root=1&roots=794,795&q=${key}`

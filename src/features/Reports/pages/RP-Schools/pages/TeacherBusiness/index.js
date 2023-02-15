@@ -28,7 +28,8 @@ function TeacherBusiness(props) {
     Pi: 1, // Trang hiện tại
     Ps: 15, // Số lượng item
     From: moment().startOf('month').toDate(),
-    To: moment().endOf('month').toDate()
+    To: moment().endOf('month').toDate(),
+    TeacherIDs: ''
   })
 
   useEffect(() => {

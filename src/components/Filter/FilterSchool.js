@@ -5,6 +5,7 @@ import { Formik, Form } from 'formik'
 import AsyncSelectSchool from '../Selects/AsyncSelectSchool'
 
 import vi from 'date-fns/locale/vi' // the locale you want
+import AsyncSelectMembers from '../Selects/AsyncSelectMembers'
 
 registerLocale('vi', vi) // register it with the name you want
 
@@ -118,6 +119,21 @@ function FilterSchool({
                             ? 'Danh sách trường trống'
                             : 'Không tìm thấy trường phù hợp.'
                         }
+                      />
+                    </div>
+                  )}
+                  {'TeacherIDs' in values && (
+                    <div className="form-group mb-20px">
+                      <label>Giáo viên</label>
+                      <AsyncSelectMembers
+                        isMulti
+                        isClearable={true}
+                        menuPosition="fixed"
+                        name="TeacherIDs"
+                        value={values.MemberID}
+                        onChange={otp => {
+                          setFieldValue('TeacherIDs', otp, false)
+                        }}
                       />
                     </div>
                   )}

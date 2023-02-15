@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import FilterSchool from 'src/components/Filter/FilterSchool'
 import IconMenuMobile from 'src/features/Reports/components/IconMenuMobile'
 import _ from 'lodash'
@@ -17,6 +17,7 @@ moment.locale('vi')
 function ClassRoom(props) {
   const [ListData, setListData] = useState([])
   const [ColumnsAdd, setColumnsAdd] = useState([])
+  const [CHAN_TRANG, setCHAN_TRANG] = useState([])
   const [loading, setLoading] = useState(false)
   const [PageCount, setPageCount] = useState(0)
   const [PageTotal, setPageTotal] = useState(0)
@@ -28,8 +29,13 @@ function ClassRoom(props) {
     Ps: 15, // Số lượng item
     From: moment().startOf('month').toDate(),
     To: moment().endOf('month').toDate(),
-    SchoolID: ''
+    SchoolID: {
+      label: 7319,
+      value: 7319
+    }
   })
+
+  const ref = useRef()
 
   useEffect(() => {
     getListClassRoom()
@@ -45,14 +51,16 @@ function ClassRoom(props) {
           PermissionHelpers.ErrorAccess(data.error)
           setLoading(false)
         } else {
-          const { Items, Total, PCount, Columns } = {
+          const { Items, Total, PCount, Columns, CHAN_TRANGs } = {
             Items: data.result?.Items || [],
             Columns: data.result?.COT || [],
             Total: data.result?.Total || 0,
-            PCount: data?.result?.PCount || 0
+            PCount: data?.result?.PCount || 0,
+            CHAN_TRANGs: data?.result?.CHAN_TRANG || []
           }
           setListData(Items.map(o => ({ ...o, IDs: uuidv4() })))
           setColumnsAdd(Columns)
+          setCHAN_TRANG(CHAN_TRANGs)
           setPageCount(PCount)
           setLoading(false)
           setPageTotal(Total)
@@ -135,7 +143,7 @@ function ClassRoom(props) {
             title: `Số tiết tháng ${value.THANG}`,
             dataKey: value.THANG + '-' + value.NAM,
             cellRenderer: ({ rowData }) => rowData.COT[index].TONG_TIET,
-            width: 180,
+            width: 160,
             sortable: false,
             keyTitle: 'THANG'
           }
@@ -154,9 +162,11 @@ function ClassRoom(props) {
                 dataKey: value.From + '-' + value.To + idx + index,
                 cellRenderer: ({ rowData }) =>
                   rowData.COT[index].CHI_TIET[idx].Total,
-                width: 130,
+                width: 160,
                 sortable: false,
-                KeyTitle: 'Tháng ' + month.THANG
+                KeyTitle: 'Tháng ' + month.THANG,
+                headerClassName: 'text-center',
+                align: 'center'
               }
               objColumns.push(newObj)
             }
@@ -250,6 +260,29 @@ function ClassRoom(props) {
     return cells
   }
 
+  const RenderFooter = React.forwardRef((props, ref) => {
+    return (
+      <div className="h-100 d-flex">
+        <div className="w-180px min-w-180px border-right d-flex align-items-center justify-content-center fw-700 text-uppercase">
+          Lớp và Sĩ số
+        </div>
+        {CHAN_TRANG &&
+          CHAN_TRANG.map((x, index) => (
+            <div
+              className={clsx(
+                'd-flex align-items-center justify-content-center fw-700 text-uppercase',
+                index === 0 ? 'w-120px min-w-120px' : 'w-160px min-w-160px',
+                CHAN_TRANG.length - 1 !== index && 'border-right'
+              )}
+              key={index}
+            >
+              {x}
+            </div>
+          ))}
+      </div>
+    )
+  })
+
   return (
     <div className="py-main">
       <div className="subheader d-flex justify-content-between align-items-center">
@@ -294,11 +327,14 @@ function ClassRoom(props) {
             loading={loading}
             pageCount={PageCount}
             onPagesChange={onPagesChange}
-            headerHeight={[50, 50]}
+            headerHeight={[50, 70]}
             headerRenderer={headerRenderer}
             // optionMobile={{
             //   CellModal: cell => OpenModalMobile(cell)
-            // }}
+            // }},
+            onScroll={({ scrollLeft }) => console.log(ref)}
+            footerHeight={50}
+            footerRenderer={<RenderFooter ref={ref} />}
           />
         </div>
       </div>

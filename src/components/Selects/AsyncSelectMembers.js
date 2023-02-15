@@ -9,20 +9,34 @@ AsyncSelectMembers.propTypes = {
 
 function AsyncSelectMembers({ onChange, value, ...props }) {
   const getAllMembers = async (search, loadedOptions, { page }) => {
-    const { data } = await moreApi.getAllMember(search)
+    const newPost = {
+      _pi: page,
+      _ps: 10,
+      _key: search,
+      Status: 0,
+      _orders: {
+        Id: true
+      },
+      _appends: {
+        IsSchoolTeacher: 0
+      },
+      _ignoredf: ['Status']
+    }
+    const { data } = await moreApi.getAllTeacher(newPost)
+    const { list, pcount } = data
     const newData =
-      data.data && data.data.length > 0
-        ? data.data.map(item => ({
+      list && list.length > 0
+        ? list.map(item => ({
             ...item,
-            label: item.text,
-            value: item.id
+            label: item.FullName,
+            value: item.ID
           }))
         : []
     return {
       options: newData,
-      hasMore: false,
+      hasMore: page < pcount,
       additional: {
-        page: 1
+        page: page + 1
       }
     }
   }
@@ -33,13 +47,13 @@ function AsyncSelectMembers({ onChange, value, ...props }) {
       className="select-control"
       classNamePrefix="select"
       loadOptions={getAllMembers}
-      placeholder="Chọn khách hàng"
+      placeholder="Chọn giáo viên"
       value={value}
       onChange={onChange}
       additional={{
         page: 1
       }}
-      noOptionsMessage={({ inputValue }) => 'Không có khách hàng'}
+      noOptionsMessage={({ inputValue }) => 'Không có giáo viên'}
     />
   )
 }

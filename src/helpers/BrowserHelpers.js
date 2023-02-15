@@ -489,6 +489,11 @@ export const BrowserHelpers = {
     if ('SchoolID' in filters) {
       params.SchoolID = filters.SchoolID ? filters.SchoolID.value : ''
     }
+    if ('TeacherIDs' in filters) {
+      params.TeacherIDs = filters.TeacherIDs
+        ? filters.TeacherIDs.map(o => o.value).join(',')
+        : ''
+    }
     return params
   }
 }
