@@ -246,6 +246,22 @@
     }
 }
 
+#el-footer {
+    overflow: scroll;
+    &::-webkit-scrollbar-track {
+        display: none;
+    }
+    &::-webkit-scrollbar {
+        width: 0px;
+        height: 0;
+        background-color: #F5F5F5;
+        //display: none;
+    }
+    &::-webkit-scrollbar-thumb {
+        display: none;
+    }
+}
+
 @media (max-width: 767px) {
     .table-responsive-attr {
         table.table-bordered {

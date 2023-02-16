@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, {
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import FilterSchool from 'src/components/Filter/FilterSchool'
 import IconMenuMobile from 'src/features/Reports/components/IconMenuMobile'
 import _ from 'lodash'
@@ -13,6 +19,72 @@ import moment from 'moment'
 import 'moment/locale/vi'
 
 moment.locale('vi')
+
+function getScrollbarWidth() {
+  // Creating invisible container
+  const outer = document.createElement('div')
+  outer.style.visibility = 'hidden'
+  outer.style.overflow = 'scroll' // forcing scrollbar to appear
+  outer.style.msOverflowStyle = 'scrollbar' // needed for WinJS apps
+  document.body.appendChild(outer)
+
+  // Creating inner element and placing it in the container
+  const inner = document.createElement('div')
+  outer.appendChild(inner)
+
+  // Calculating difference between container's full width and the child width
+  const scrollbarWidth = outer.offsetWidth - inner.offsetWidth
+
+  // Removing temporary elements from the DOM
+  outer.parentNode.removeChild(outer)
+
+  return scrollbarWidth
+}
+
+const RenderFooter = React.forwardRef((props, ref) => {
+  const { CHAN_TRANG } = props
+  const refElm = useRef()
+  useImperativeHandle(ref, () => ({
+    getRef() {
+      return refElm
+    }
+  }))
+
+  const getStyle = isSet => {
+    let style = {}
+    if (isSet) {
+      style.width = `${160 + getScrollbarWidth()}px`
+      style.minWidth = `${160 + getScrollbarWidth()}px`
+    }
+    return style
+  }
+
+  return (
+    <div className="h-100 d-flex" id="el-footer" ref={refElm}>
+      <div className="w-180px min-w-180px border-right d-flex align-items-center justify-content-center fw-700 text-uppercase">
+        Lớp và Sĩ số
+      </div>
+      {CHAN_TRANG &&
+        CHAN_TRANG.map((x, index) => (
+          <div
+            className={clsx(
+              'd-flex align-items-center justify-content-center fw-700 text-uppercase',
+              index === 0
+                ? 'w-120px min-w-120px'
+                : CHAN_TRANG.length - 1 !== index
+                ? 'w-160px min-w-160px'
+                : '',
+              CHAN_TRANG.length - 1 !== index && 'border-right'
+            )}
+            style={{ ...getStyle(CHAN_TRANG.length - 1 === index) }}
+            key={index}
+          >
+            {x}
+          </div>
+        ))}
+    </div>
+  )
+})
 
 function ClassRoom(props) {
   const [ListData, setListData] = useState([])
@@ -35,7 +107,7 @@ function ClassRoom(props) {
     }
   })
 
-  const ref = useRef()
+  const childCompRef = useRef()
 
   useEffect(() => {
     getListClassRoom()
@@ -260,29 +332,6 @@ function ClassRoom(props) {
     return cells
   }
 
-  const RenderFooter = React.forwardRef((props, ref) => {
-    return (
-      <div className="h-100 d-flex">
-        <div className="w-180px min-w-180px border-right d-flex align-items-center justify-content-center fw-700 text-uppercase">
-          Lớp và Sĩ số
-        </div>
-        {CHAN_TRANG &&
-          CHAN_TRANG.map((x, index) => (
-            <div
-              className={clsx(
-                'd-flex align-items-center justify-content-center fw-700 text-uppercase',
-                index === 0 ? 'w-120px min-w-120px' : 'w-160px min-w-160px',
-                CHAN_TRANG.length - 1 !== index && 'border-right'
-              )}
-              key={index}
-            >
-              {x}
-            </div>
-          ))}
-      </div>
-    )
-  })
-
   return (
     <div className="py-main">
       <div className="subheader d-flex justify-content-between align-items-center">
@@ -332,9 +381,16 @@ function ClassRoom(props) {
             // optionMobile={{
             //   CellModal: cell => OpenModalMobile(cell)
             // }},
-            onScroll={({ scrollLeft }) => console.log(ref)}
+            onScroll={({ scrollLeft }) => {
+              const el = childCompRef.current.getRef()
+              if (el?.current) {
+                el.current.scrollLeft = scrollLeft
+              }
+            }}
             footerHeight={50}
-            footerRenderer={<RenderFooter ref={ref} />}
+            footerRenderer={
+              <RenderFooter ref={childCompRef} CHAN_TRANG={CHAN_TRANG} />
+            }
           />
         </div>
       </div>
