@@ -101,10 +101,7 @@ function ClassRoom(props) {
     Ps: 15, // Số lượng item
     From: moment().startOf('month').toDate(),
     To: moment().endOf('month').toDate(),
-    SchoolID: {
-      label: 7319,
-      value: 7319
-    }
+    SchoolID: ''
   })
 
   const childCompRef = useRef()
@@ -193,7 +190,8 @@ function ClassRoom(props) {
         sortable: false,
         mobileOptions: {
           visible: true
-        }
+        },
+        align: 'center'
       },
       {
         key: 'SI_SO',
@@ -203,7 +201,8 @@ function ClassRoom(props) {
         sortable: false,
         mobileOptions: {
           visible: true
-        }
+        },
+        align: 'center'
       }
     ]
     if (ListData && ListData.length > 0) {
@@ -214,10 +213,11 @@ function ClassRoom(props) {
             key: value.THANG + '-' + value.NAM,
             title: `Số tiết tháng ${value.THANG}`,
             dataKey: value.THANG + '-' + value.NAM,
-            cellRenderer: ({ rowData }) => rowData.COT[index].TONG_TIET,
+            cellRenderer: ({ rowData }) => rowData.COT[index].Tong_tiet,
             width: 160,
             sortable: false,
-            keyTitle: 'THANG'
+            keyTitle: 'THANG',
+            align: 'center'
           }
           objColumns.push(newObj)
         }
