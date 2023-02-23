@@ -32,6 +32,12 @@ const MenuList = [
     Href: '/bao-cao/gv-cong-tac-phi'
   },
   {
+    Title: 'Giáo viên - Công tác phí ngày',
+    TitleKey: 'GV_CONG_TAC_PHI_ngay',
+    IconClass: 'fa-regular fa-piggy-bank icon',
+    Href: '/bao-cao/gv-cong-tac-phi-ngay'
+  },
+  {
     Title: 'Giáo viên - Tiết chuyên đề',
     TitleKey: 'GV_TIET_CHUYEN_DE',
     IconClass: 'fa-regular fa-book icon',

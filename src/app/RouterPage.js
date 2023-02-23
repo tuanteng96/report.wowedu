@@ -7,6 +7,7 @@ import TeacherClass from 'src/features/Reports/pages/RP-Schools/pages/TeacherCla
 import TeacherBusiness from 'src/features/Reports/pages/RP-Schools/pages/TeacherBusiness'
 import TeacherThematic from 'src/features/Reports/pages/RP-Schools/pages/TeacherThematic'
 import TeacherOvertime from 'src/features/Reports/pages/RP-Schools/pages/TeacherOvertime'
+import TeacherBusinessDay from 'src/features/Reports/pages/RP-Schools/pages/TeacherBusinessDay'
 
 function RouterPage(props) {
   return (
@@ -24,6 +25,7 @@ function RouterPage(props) {
         <Route path="truong-tong-so-tiet" element={<ClassRoom />} />
         <Route path="gv-tong-so-tiet" element={<TeacherClass />} />
         <Route path="gv-cong-tac-phi" element={<TeacherBusiness />} />
+        <Route path="gv-cong-tac-phi-ngay" element={<TeacherBusinessDay />} />
         <Route path="gv-tiet-chuyen-de" element={<TeacherThematic />} />
         <Route path="gv-tang-ca" element={<TeacherOvertime />} />
       </Route>

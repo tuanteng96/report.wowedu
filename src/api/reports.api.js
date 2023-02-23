@@ -204,6 +204,12 @@ const reportsApi = {
   getListTeacherBusiness: data => {
     return http.post(`${SubApi}/giao-vien/cong-tac-phi`, JSON.stringify(data))
   },
+  getListTeacherBusinessDay: data => {
+    return http.post(
+      `${SubApi}/giao-vien/cong-tac-phi-ngay`,
+      JSON.stringify(data)
+    )
+  },
   getListTeacherThematic: data => {
     return http.post(`${SubApi}/giao-vien/chuyen-de`, JSON.stringify(data))
   },
