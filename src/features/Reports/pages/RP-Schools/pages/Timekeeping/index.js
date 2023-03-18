@@ -208,6 +208,7 @@ function Timekeeping(props) {
         objColumns.push({
           key: 'VAN_TAY' + index,
           title: clm.Text.Text,
+          titleKey: clm.Text.Num,
           dataKey: 'VAN_TAY_1',
           width: 100,
           sortable: false,
@@ -220,6 +221,7 @@ function Timekeeping(props) {
         objColumns.push({
           key: 'VAN_TAY_' + index,
           title: clm.Text.Text,
+          titleKey: clm.Text.Num,
           dataKey: 'VAN_TAY_2',
           width: 100,
           sortable: false,
@@ -258,7 +260,7 @@ function Timekeeping(props) {
               style={{ width: width + 'px' }}
               key={uuidv4()}
             >
-              {column.title}
+              {column.titleKey}
             </div>
           )
         } else {
