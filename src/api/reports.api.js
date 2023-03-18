@@ -215,6 +215,9 @@ const reportsApi = {
   },
   getListTeacherOvertime: data => {
     return http.post(`${SubApi}/giao-vien/tang-ca`, JSON.stringify(data))
+  },
+  getListTimekeeping: data => {
+    return http.post(`${SubApi}/giao-vien/cham-cong`, JSON.stringify(data))
   }
 }
 export default reportsApi

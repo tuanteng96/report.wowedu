@@ -48,6 +48,12 @@ const MenuList = [
     TitleKey: 'GV_TANG_CA',
     IconClass: 'fa-regular fa-alarm-snooze icon',
     Href: '/bao-cao/gv-tang-ca'
+  },
+  {
+    Title: 'Giáo viên chấm công',
+    TitleKey: 'GV_CHAM_CONG',
+    IconClass: 'fa-regular fa-business-time icon',
+    Href: '/bao-cao/gv-cham-cong'
   }
 ]
 
