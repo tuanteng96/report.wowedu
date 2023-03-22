@@ -125,16 +125,16 @@ function TeacherClass(props) {
           visible: true
         }
       },
-      {
-        key: 'DINH_MUC',
-        title: 'Định mức 85',
-        dataKey: 'DINH_MUC',
-        width: 150,
-        sortable: false,
-        mobileOptions: {
-          visible: true
-        }
-      },
+      // {
+      //   key: 'DINH_MUC',
+      //   title: 'Định mức 85',
+      //   dataKey: 'DINH_MUC',
+      //   width: 150,
+      //   sortable: false,
+      //   mobileOptions: {
+      //     visible: true
+      //   }
+      // },
       {
         key: 'TONG_TIET',
         title: 'Tổng tiết',
