@@ -52,7 +52,7 @@ function TeacherBusinessDay(props) {
             Items: data.result?.Items || [],
             Columns: data.result?.COT || [],
             ColumnsAdditi: data.result?.COT_BO_SUNG || [],
-            Total: data.result?.Total || 0,
+            Total: data.result?.Items.length || 0,
             PCount: data?.result?.PCount || 0
           }
           setListData(Items.map(o => ({ ...o, IDs: uuidv4() })))
@@ -89,7 +89,19 @@ function TeacherBusinessDay(props) {
     getListTeacherBusiness()
   }
 
-  const onExport = () => {}
+  const onExport = () => {
+    PermissionHelpers.ExportExcel({
+      FuncStart: () => setLoadingExport(true),
+      FuncEnd: () => setLoadingExport(false),
+      FuncApi: () =>
+        reportsApi.getListTeacherBusinessDay(
+          BrowserHelpers.getRequestParamsSchools(filters, {
+            Total: PageTotal
+          })
+        ),
+      UrlName: '/bao-cao/gv-cong-tac-phi-ngay'
+    })
+  }
 
   const onPagesChange = ({ Pi, Ps }) => {
     setFilters({ ...filters, Pi, Ps })

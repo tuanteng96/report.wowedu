@@ -48,7 +48,7 @@ function TeacherClass(props) {
           const { Items, Total, PCount, Columns } = {
             Items: data.result?.Items || [],
             Columns: data.result?.COT || [],
-            Total: data.result?.Total || 0,
+            Total: data.result?.Items.length || 0,
             PCount: data?.result?.PCount || 0
           }
           setListData(Items.map(o => ({ ...o, IDs: uuidv4() })))
@@ -84,7 +84,19 @@ function TeacherClass(props) {
     getListTeacherClass()
   }
 
-  const onExport = () => {}
+  const onExport = () => {
+    PermissionHelpers.ExportExcel({
+      FuncStart: () => setLoadingExport(true),
+      FuncEnd: () => setLoadingExport(false),
+      FuncApi: () =>
+        reportsApi.getListTeacherClass(
+          BrowserHelpers.getRequestParamsSchools(filters, {
+            Total: PageTotal
+          })
+        ),
+      UrlName: '/bao-cao/gv-tong-so-tiet'
+    })
+  }
 
   const onPagesChange = ({ Pi, Ps }) => {
     setFilters({ ...filters, Pi, Ps })

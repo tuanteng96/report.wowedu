@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react'
 import FilterSchool from 'src/components/Filter/FilterSchool'
 import ReactTableV7 from 'src/components/Tables/ReactTableV7'
 import IconMenuMobile from 'src/features/Reports/components/IconMenuMobile'
-import { ArrayHeplers } from 'src/helpers/ArrayHeplers'
 import { PermissionHelpers } from 'src/helpers/PermissionHelpers'
 import { BrowserHelpers } from 'src/helpers/BrowserHelpers'
 import reportsApi from 'src/api/reports.api'
@@ -79,7 +78,7 @@ function Timekeeping(props) {
           const { Items, Total, PCount, Columns } = {
             Items: data.result?.Items || [],
             Columns: data.result?.Header || [],
-            Total: data.result?.Total || 0,
+            Total: data.result?.Items.length || 0,
             PCount: data?.result?.PCount || 0
           }
           setListData(converArray(Items, Columns))
@@ -115,7 +114,19 @@ function Timekeeping(props) {
     getListTimekeepings()
   }
 
-  const onExport = () => {}
+  const onExport = () => {
+    PermissionHelpers.ExportExcel({
+      FuncStart: () => setLoadingExport(true),
+      FuncEnd: () => setLoadingExport(false),
+      FuncApi: () =>
+        reportsApi.getListTimekeeping(
+          BrowserHelpers.getRequestParamsSchools(filters, {
+            Total: PageTotal
+          })
+        ),
+      UrlName: '/bao-cao/gv-cham-cong'
+    })
+  }
 
   const onPagesChange = ({ Pi, Ps }) => {
     setFilters({ ...filters, Pi, Ps })
@@ -244,6 +255,7 @@ function Timekeeping(props) {
       }
     }
     return objColumns
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, ListData, ColumnsAdd])
 
   const headerRenderer = ({ cells, columns, headerIndex }) => {
