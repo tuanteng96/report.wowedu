@@ -20,37 +20,37 @@ const MenuList = [
     Href: '/bao-cao/truong-tong-so-tiet'
   },
   {
-    Title: 'Giáo viên - Tổng số tiết',
+    Title: 'GV - Tổng số tiết',
     TitleKey: 'GV_TONG_SO_TIET',
     IconClass: 'fa-regular fa-chalkboard-user icon',
     Href: '/bao-cao/gv-tong-so-tiet'
   },
   {
-    Title: 'Giáo viên - Công tác phí',
+    Title: 'GV - Công tác phí',
     TitleKey: 'GV_CONG_TAC_PHI',
     IconClass: 'fa-regular fa-piggy-bank icon',
     Href: '/bao-cao/gv-cong-tac-phi'
   },
   {
-    Title: 'Giáo viên - Công tác phí ngày',
+    Title: 'GV - Công tác phí ngày',
     TitleKey: 'GV_CONG_TAC_PHI_ngay',
     IconClass: 'fa-regular fa-piggy-bank icon',
     Href: '/bao-cao/gv-cong-tac-phi-ngay'
   },
   {
-    Title: 'Giáo viên - Tiết chuyên đề',
+    Title: 'GV - Tiết chuyên đề',
     TitleKey: 'GV_TIET_CHUYEN_DE',
     IconClass: 'fa-regular fa-book icon',
     Href: '/bao-cao/gv-tiet-chuyen-de'
   },
   {
-    Title: 'Giáo viên - Tăng ca',
+    Title: 'GV - Tăng ca',
     TitleKey: 'GV_TANG_CA',
     IconClass: 'fa-regular fa-alarm-snooze icon',
     Href: '/bao-cao/gv-tang-ca'
   },
   {
-    Title: 'Giáo viên chấm công',
+    Title: 'GV chấm công',
     TitleKey: 'GV_CHAM_CONG',
     IconClass: 'fa-regular fa-business-time icon',
     Href: '/bao-cao/gv-cham-cong'

@@ -209,50 +209,96 @@ function Timekeeping(props) {
     ]
     if (ColumnsAdd && ColumnsAdd.length > 0) {
       const ColumnsAddSlice = ColumnsAdd.slice(5, ColumnsAdd.length - 1)
-      const clmString = ColumnsAddSlice.filter(
-        x => x.Text && typeof x.Text === 'string'
-      )
-      const clmObj = ColumnsAddSlice.filter(
-        x => x.Text && typeof x.Text !== 'string'
-      )
-      for (let [index, clm] of clmObj.entries()) {
-        objColumns.push({
-          key: 'VAN_TAY' + index,
-          title: clm.Text.Text,
-          titleKey: clm.Text.Num,
-          dataKey: 'VAN_TAY_1',
-          width: 100,
-          sortable: false,
-          headerObj: clm,
-          cellRenderer: ({ rowData }) => {
-            return rowData.Items[index] && rowData.Items[index].S[rowData.Type]
-          },
-          className: 'fw-600 font-size-sm justify-content-center'
-        })
-        objColumns.push({
-          key: 'VAN_TAY_' + index,
-          title: clm.Text.Text,
-          titleKey: clm.Text.Num,
-          dataKey: 'VAN_TAY_2',
-          width: 100,
-          sortable: false,
-          headerRemove: true,
-          cellRenderer: ({ rowData }) => {
-            return rowData.Items[index] && rowData.Items[index].C[rowData.Type]
-          },
-          className: 'fw-600 font-size-sm justify-content-center'
-        })
+
+      for (let [index, clm] of ColumnsAddSlice.entries()) {
+        if (clm.Text && typeof clm.Text === 'string') {
+          objColumns.push({
+            key: clm.Key,
+            title: clm.Text,
+            dataKey: clm.Key,
+            width: 150,
+            sortable: false,
+            className: 'fw-600 font-size-sm justify-content-center'
+          })
+        } else {
+          objColumns.push({
+            key: 'VAN_TAY' + index,
+            title: clm.Text.Text,
+            titleKey: clm.Text.Num,
+            dataKey: 'VAN_TAY_1',
+            width: 100,
+            sortable: false,
+            headerObj: clm,
+            cellRenderer: ({ rowData }) => {
+              return (
+                rowData.Items[index] && rowData.Items[index].S[rowData.Type]
+              )
+            },
+            className: 'fw-600 font-size-sm justify-content-center'
+          })
+          objColumns.push({
+            key: 'VAN_TAY_' + index,
+            title: clm.Text.Text,
+            titleKey: clm.Text.Num,
+            dataKey: 'VAN_TAY_2',
+            width: 100,
+            sortable: false,
+            headerRemove: true,
+            cellRenderer: ({ rowData }) => {
+              return (
+                rowData.Items[index] && rowData.Items[index].C[rowData.Type]
+              )
+            },
+            className: 'fw-600 font-size-sm justify-content-center'
+          })
+        }
       }
-      for (let clm of clmString) {
-        objColumns.push({
-          key: clm.Key,
-          title: clm.Text,
-          dataKey: clm.Key,
-          width: 150,
-          sortable: false,
-          className: 'fw-600 font-size-sm justify-content-center'
-        })
-      }
+
+      // const clmString = ColumnsAddSlice.filter(
+      //   x => x.Text && typeof x.Text === 'string'
+      // )
+      // const clmObj = ColumnsAddSlice.filter(
+      //   x => x.Text && typeof x.Text !== 'string'
+      // )
+
+      // for (let [index, clm] of clmObj.entries()) {
+      //   objColumns.push({
+      //     key: 'VAN_TAY' + index,
+      //     title: clm.Text.Text,
+      //     titleKey: clm.Text.Num,
+      //     dataKey: 'VAN_TAY_1',
+      //     width: 100,
+      //     sortable: false,
+      //     headerObj: clm,
+      //     cellRenderer: ({ rowData }) => {
+      //       return rowData.Items[index] && rowData.Items[index].S[rowData.Type]
+      //     },
+      //     className: 'fw-600 font-size-sm justify-content-center'
+      //   })
+      //   objColumns.push({
+      //     key: 'VAN_TAY_' + index,
+      //     title: clm.Text.Text,
+      //     titleKey: clm.Text.Num,
+      //     dataKey: 'VAN_TAY_2',
+      //     width: 100,
+      //     sortable: false,
+      //     headerRemove: true,
+      //     cellRenderer: ({ rowData }) => {
+      //       return rowData.Items[index] && rowData.Items[index].C[rowData.Type]
+      //     },
+      //     className: 'fw-600 font-size-sm justify-content-center'
+      //   })
+      // }
+      // for (let clm of clmString) {
+      //   objColumns.push({
+      //     key: clm.Key,
+      //     title: clm.Text,
+      //     dataKey: clm.Key,
+      //     width: 150,
+      //     sortable: false,
+      //     className: 'fw-600 font-size-sm justify-content-center'
+      //   })
+      // }
     }
     return objColumns
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -264,7 +310,8 @@ function Timekeeping(props) {
       let indexObj = columns.findIndex(x => x.headerObj)
       let countLength = columns.findIndex(x => x.headerObj || x.headerRemove)
       columns.forEach((column, columnIndex) => {
-        if (columnIndex >= indexObj && columnIndex < countLength + indexObj) {
+        //columnIndex >= indexObj && columnIndex < countLength + indexObj
+        if (column.headerObj || column.headerRemove) {
           let width = cells[columnIndex].props.style.width
           GroupCell.push(
             <div
