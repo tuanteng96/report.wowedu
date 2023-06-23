@@ -52,6 +52,7 @@ function Timekeeping(props) {
   const [PageCount, setPageCount] = useState(0)
   const [PageTotal, setPageTotal] = useState(0)
   const [loadingExport, setLoadingExport] = useState(false)
+  const [frozen, setFrozen] = useState(false)
   const [isFilter, setIsFilter] = useState(false)
   const [filters, setFilters] = useState({
     Pi: 1, // Trang hiện tại
@@ -171,7 +172,8 @@ function Timekeeping(props) {
         mobileOptions: {
           visible: true
         },
-        className: 'fw-600'
+        className: 'fw-600',
+        frozen: frozen
       },
       {
         key: 'Type',
@@ -302,7 +304,7 @@ function Timekeeping(props) {
     }
     return objColumns
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, ListData, ColumnsAdd])
+  }, [filters, ListData, ColumnsAdd, frozen])
 
   const headerRenderer = ({ cells, columns, headerIndex }) => {
     if (headerIndex === 0) {
@@ -412,6 +414,14 @@ function Timekeeping(props) {
             onPagesChange={onPagesChange}
             headerHeight={[50, 50]}
             headerRenderer={headerRenderer}
+            onScroll={({ scrollLeft }) => {
+              if (scrollLeft > 182) {
+                setFrozen(true)
+              }
+              else {
+                setFrozen(false)
+              }
+            }}
             // optionMobile={{
             //   CellModal: cell => OpenModalMobile(cell)
             // }}
