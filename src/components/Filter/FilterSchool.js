@@ -122,7 +122,7 @@ function FilterSchool({
                       />
                     </div>
                   )}
-                  {'TeacherIDs' in values && (
+                  {!window?.IsApp && 'TeacherIDs' in values && (
                     <div className="form-group mb-20px">
                       <label>Giáo viên</label>
                       <AsyncSelectMembers

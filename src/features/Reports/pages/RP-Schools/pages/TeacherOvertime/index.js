@@ -29,7 +29,14 @@ function TeacherOvertime(props) {
     Ps: 15, // Số lượng item
     From: moment().startOf('month').toDate(),
     To: moment().endOf('month').toDate(),
-    TeacherIDs: '',
+    TeacherIDs: window.IsApp
+      ? [
+          {
+            value: window.Info.ID,
+            label: window.Info.FullName
+          }
+        ]
+      : '',
     match: true
   })
 

@@ -11,7 +11,7 @@ function AuthInit(props) {
   const dispatch = useDispatch()
   // We should request user by authToken before rendering the application
   function checkInfo(fn) {
-    if (!window.top.Token) {
+    if (!window.Token || !window.Info) {
       setTimeout(() => {
         checkInfo(fn)
       }, 50)
@@ -41,7 +41,7 @@ function AuthInit(props) {
         dispatch(
           setProfile({
             Info: window.Info,
-            Token: window.top.Token
+            Token: window.Token
           })
         )
         setShowSplashScreen(false)

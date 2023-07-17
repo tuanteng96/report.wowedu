@@ -6,56 +6,62 @@ import clsx from 'clsx'
 import { useSelector, useDispatch } from 'react-redux'
 import { ToggleAside } from '../../layout/LayoutSlice'
 import Swal from 'sweetalert2'
-
-const perfectScrollbarOptions = {
-  wheelSpeed: 2,
-  wheelPropagation: false
-}
-
 const MenuList = [
   {
     Title: 'Trường - Tổng số tiết',
     TitleKey: 'TRUONG_TONG_SO_TIET',
     IconClass: 'fa-regular fa-school icon',
-    Href: '/bao-cao/truong-tong-so-tiet'
+    Href: '/bao-cao/truong-tong-so-tiet',
+    IsShow: !window?.IsApp
   },
   {
     Title: 'GV - Tổng số tiết',
     TitleKey: 'GV_TONG_SO_TIET',
     IconClass: 'fa-regular fa-chalkboard-user icon',
-    Href: '/bao-cao/gv-tong-so-tiet'
+    Href: '/bao-cao/gv-tong-so-tiet',
+    IsShow: true
   },
   {
     Title: 'GV - Công tác phí',
     TitleKey: 'GV_CONG_TAC_PHI',
     IconClass: 'fa-regular fa-piggy-bank icon',
-    Href: '/bao-cao/gv-cong-tac-phi'
+    Href: '/bao-cao/gv-cong-tac-phi',
+    IsShow: true
   },
   {
     Title: 'GV - Công tác phí ngày',
     TitleKey: 'GV_CONG_TAC_PHI_ngay',
     IconClass: 'fa-regular fa-piggy-bank icon',
-    Href: '/bao-cao/gv-cong-tac-phi-ngay'
+    Href: '/bao-cao/gv-cong-tac-phi-ngay',
+    IsShow: true
   },
   {
     Title: 'GV - Tiết chuyên đề',
     TitleKey: 'GV_TIET_CHUYEN_DE',
     IconClass: 'fa-regular fa-book icon',
-    Href: '/bao-cao/gv-tiet-chuyen-de'
+    Href: '/bao-cao/gv-tiet-chuyen-de',
+    IsShow: true
   },
   {
     Title: 'GV - Tăng ca',
     TitleKey: 'GV_TANG_CA',
     IconClass: 'fa-regular fa-alarm-snooze icon',
-    Href: '/bao-cao/gv-tang-ca'
+    Href: '/bao-cao/gv-tang-ca',
+    IsShow: true
   },
   {
     Title: 'GV chấm công',
     TitleKey: 'GV_CHAM_CONG',
     IconClass: 'fa-regular fa-business-time icon',
-    Href: '/bao-cao/gv-cham-cong'
+    Href: '/bao-cao/gv-cham-cong',
+    IsShow: true
   }
 ]
+
+const perfectScrollbarOptions = {
+  wheelSpeed: 2,
+  wheelPropagation: false
+}
 
 function NavBar(props) {
   const { isShowMobile } = useSelector(({ layout }) => ({
@@ -116,7 +122,9 @@ function NavBar(props) {
           >
             <ul className="ezs-navbars">
               {MenuList &&
-                MenuList.map((item, index) => (
+                MenuList.filter(x =>
+                  window?.IsApp ? x.Href !== '/bao-cao/truong-tong-so-tiet' : x
+                ).map((item, index) => (
                   <li
                     className={clsx(
                       IndexShow === item.TitleKey && 'menu-item-open'

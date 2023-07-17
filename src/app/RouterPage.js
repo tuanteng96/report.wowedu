@@ -22,7 +22,15 @@ function RouterPage(props) {
           </LayoutReport>
         }
       >
-        <Route index element={<Navigate to="truong-tong-so-tiet" replace />} />
+        <Route
+          index
+          element={
+            <Navigate
+              to={window.IsApp ? 'gv-tong-so-tiet' : 'truong-tong-so-tiet'}
+              replace
+            />
+          }
+        />
         <Route path="truong-tong-so-tiet" element={<ClassRoom />} />
         <Route path="gv-tong-so-tiet" element={<TeacherClass />} />
         <Route path="gv-cong-tac-phi" element={<TeacherBusiness />} />
