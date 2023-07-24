@@ -281,21 +281,37 @@ function TeacherOvertime(props) {
   return (
     <div className="py-main">
       <div className="subheader d-flex justify-content-between align-items-center">
-        <div className="flex-1">
-          <span className="text-uppercase text-uppercase font-size-xl fw-600">
-            Giáo viên - Tăng ca
-          </span>
-        </div>
-        <div className="w-85px d-flex justify-content-end">
-          <button
-            type="button"
-            className="btn btn-primary p-0 w-40px h-35px"
-            onClick={onOpenFilter}
-          >
-            <i className="fa-regular fa-filters font-size-lg mt-5px"></i>
-          </button>
-          <IconMenuMobile />
-        </div>
+        {!window?.IsApp && (
+          <>
+            <div className="flex-1">
+              <span className="text-uppercase text-uppercase font-size-xl fw-600">
+                Giáo viên - Tăng ca
+              </span>
+            </div>
+            <div className="w-85px d-flex justify-content-end">
+              <button
+                type="button"
+                className="btn btn-primary p-0 w-40px h-35px"
+                onClick={onOpenFilter}
+              >
+                <i className="fa-regular fa-filters font-size-lg mt-5px"></i>
+              </button>
+              <IconMenuMobile />
+            </div>
+          </>
+        )}
+        {window?.IsApp && (
+          <>
+            <IconMenuMobile />
+            <button
+              type="button"
+              className="btn btn-primary p-0 w-40px h-35px"
+              onClick={onOpenFilter}
+            >
+              <i className="fa-regular fa-filters font-size-lg mt-5px"></i>
+            </button>
+          </>
+        )}
       </div>
       <FilterSchool
         show={isFilter}

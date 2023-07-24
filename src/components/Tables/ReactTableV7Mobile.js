@@ -137,7 +137,7 @@ function ReactTableV7Mobile({
           )}
         </>
       )}
-      {filters && (
+      {!window?.IsApp && filters && (
         <div className="pagination d-flex justify-content-between align-items-center mt-15px">
           <Pagination
             count={controlledPageCount}
